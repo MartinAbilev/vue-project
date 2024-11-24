@@ -83,9 +83,29 @@
         };
 
         ws.onmessage = (event) => {
-          const message = JSON.parse(event.data);
+        const message = JSON.parse(event.data);
 
-          if (message.type === 'newNumber') {
+        if (message.type === 'historicalData') {
+            // Load historical data points
+            const historicalLabels = message.data.map((point: any) => point.timestamp);
+            const historicalData = message.data.map((point: any) => point.number);
+
+            // Set initial chartData from historical data
+            chartData.value = {
+            labels: historicalLabels,
+            datasets: [
+                {
+                label: 'Random Data',
+                data: historicalData,
+                borderColor: 'rgba(75,192,192,1)',
+                backgroundColor: 'rgba(75,192,192,0.2)',
+                },
+            ],
+            };
+
+            lastRefreshed.value = new Date().toLocaleString();
+            dataLoaded.value = true; // Mark data as loaded
+        } else if (message.type === 'newNumber') {
             const { number, timestamp } = message.data;
 
             // Update labels and data reactively
@@ -94,30 +114,26 @@
 
             // Keep only the latest 15 data points
             if (newLabels.length > 15) {
-              newLabels.shift();
-              newData.shift();
+            newLabels.shift();
+            newData.shift();
             }
 
             // Update chartData with new instances
             chartData.value = {
-              ...chartData.value,
-              labels: newLabels,
-              datasets: [
+            ...chartData.value,
+            labels: newLabels,
+            datasets: [
                 {
-                  ...chartData.value.datasets[0],
-                  data: newData,
+                ...chartData.value.datasets[0],
+                data: newData,
                 },
-              ],
+            ],
             };
 
             lastRefreshed.value = new Date().toLocaleString();
-
-            if (!dataLoaded.value) {
-              dataLoaded.value = true;
-            }
-          } else if (message.type === 'margin') {
-            currentMargin.value = message.value;
-          }
+        } else if (message.type === 'margin') {
+            currentMargin.value = message.value; // Update margin value reactively
+        }
         };
 
         ws.onclose = () => {
