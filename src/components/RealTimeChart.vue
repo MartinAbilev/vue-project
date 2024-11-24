@@ -76,7 +76,10 @@
       let ws: WebSocket;
 
       const connectWebSocket = () => {
-        ws = new WebSocket('ws://localhost:3000');
+
+
+        const token = localStorage.getItem('token');
+        ws = new WebSocket(`ws://localhost:3000?token=${token}`);
 
         ws.onopen = () => {
           connectionStatus.value = 'Connected';

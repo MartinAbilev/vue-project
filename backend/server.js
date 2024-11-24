@@ -74,7 +74,31 @@ const generateRandomNumber = () => {
 setInterval(generateRandomNumber, 10000);
 
 // Handle WebSocket connections
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+
+   // Parse token from query string
+   const token = new URL(req.url, `http://${req.headers.host}`).searchParams.get('token');
+
+   if (!token) {
+     ws.close(4001, 'Unauthorized: Token required');
+     return;
+   }
+
+   // Verify the token
+   try {
+     const decoded = jwt.verify(token, SECRET_KEY);
+     ws.user = decoded; // Attach user info to the WebSocket instance
+     console.log(`User authorized: ${decoded.username}`);
+   } catch (error) {
+     ws.close(4002, 'Unauthorized: Invalid token');
+     return;
+   }
+
+   // Listen for messages
+   ws.on('message', (message) => {
+     console.log(`Received message from user ${ws.user.username}:`, message);
+   });
+
   // Send historical data on connection
   ws.send(JSON.stringify({ type: 'historicalData', data: historicalData }));
 
