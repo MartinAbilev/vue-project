@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginForm from '@/components/login.vue';
 import HomePage from '@/components/HomePage.vue';
-// import MarginUpdate from '@/components/MarginUpdate.vue';
 
 const routes = [
   { path: '/login', component: LoginForm },
@@ -10,11 +9,6 @@ const routes = [
     component: HomePage,
     meta: { requiresAuth: true }
   },
-//   {
-//     path: '/margin',
-//     component: MarginUpdate,
-//     meta: { requiresAuth: true }
-//   },
 ];
 
 const router = createRouter({
