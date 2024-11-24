@@ -41,7 +41,7 @@
           localStorage.setItem('token', response.data.token);
 
           // Redirect to home or another secured page
-        //   this.$router.push('/home');
+          this.$router.push('/home');
         } catch (err) {
           this.error = 'err' +  err;
         }
